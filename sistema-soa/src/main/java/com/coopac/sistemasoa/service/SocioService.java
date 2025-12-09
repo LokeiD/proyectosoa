@@ -1,6 +1,7 @@
 package com.coopac.sistemasoa.service;
 
 import com.coopac.sistemasoa.dto.SocioDTO;
+import com.coopac.sistemasoa.exception.SoaException;
 import com.coopac.sistemasoa.model.Socio;
 import com.coopac.sistemasoa.repository.AportesRepository;
 import com.coopac.sistemasoa.repository.SocioRepository;
@@ -31,7 +32,7 @@ public class SocioService {
 
     private Socio buscarSocioPorDni(String dni) {
         return socioRepository.findByDni(dni)
-                .orElseThrow(() -> new RuntimeException("El DNI ingresado no existe en el padrón de socios."));
+                .orElseThrow(() -> new SoaException("404","El DNI ingresado no existe en el padrón de socios."));
     }
 
     private void validarSocioActivo(Socio socio) {

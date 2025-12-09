@@ -2,6 +2,7 @@ package com.coopac.sistemasoa.service;
 
 import com.coopac.sistemasoa.dto.CargaComboBoxFormularioDTO;
 import com.coopac.sistemasoa.dto.SolicitudCreditoDTO;
+import com.coopac.sistemasoa.exception.SoaException;
 import com.coopac.sistemasoa.model.*;
 import com.coopac.sistemasoa.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class GestionCreditosService {
     public ExpedienteCredito registrarSolicitud(SolicitudCreditoDTO dto) {
 
         Socio socio = socioRepository.findByDni(dto.getDniSocio())
-                .orElseThrow(() -> new RuntimeException("No se encontró socio con DNI: " + dto.getDniSocio()));
+                .orElseThrow(() -> new SoaException("404","No se encontró socio con DNI: " + dto.getDniSocio()));
 
         ExpedienteCredito expediente = new ExpedienteCredito();
         expediente.setSocio(socio);

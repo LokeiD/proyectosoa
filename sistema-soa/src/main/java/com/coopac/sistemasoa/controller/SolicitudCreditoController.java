@@ -2,6 +2,7 @@ package com.coopac.sistemasoa.controller;
 
 import com.coopac.sistemasoa.dto.CargaComboBoxFormularioDTO;
 import com.coopac.sistemasoa.dto.SolicitudCreditoDTO;
+import com.coopac.sistemasoa.exception.SoaException;
 import com.coopac.sistemasoa.model.ExpedienteCredito;
 import com.coopac.sistemasoa.service.GestionCreditosService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/creditos")
-@CrossOrigin(origins = "*")
+
 public class SolicitudCreditoController {
 
     @Autowired
@@ -25,15 +26,8 @@ public class SolicitudCreditoController {
 
     @PostMapping("/solicitud")
     public ResponseEntity<?> crearSolicitud(@RequestBody SolicitudCreditoDTO dto) {
-        try {
-            ExpedienteCredito nuevoExpediente = creditosService.registrarSolicitud(dto);
-            return ResponseEntity.ok(nuevoExpediente);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("Error interno del servidor: " + e.getMessage());
-        }
+        ExpedienteCredito nuevoExpediente = creditosService.registrarSolicitud(dto);
+        return ResponseEntity.ok(nuevoExpediente);
     }
 
     @GetMapping("/listado")

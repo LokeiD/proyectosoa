@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/socios")
-@CrossOrigin(origins = "*")
+
 public class SocioController {
 
     @Autowired
@@ -16,13 +16,7 @@ public class SocioController {
 
     @GetMapping("/buscar/{dni}")
     public ResponseEntity<?> buscarSocioPorDni(@PathVariable String dni) {
-        try {
-            SocioDTO info = socioService.obtenerInformacionParaSolicitud(dni);
-            return ResponseEntity.ok(info);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error interno: " + e.getMessage());
-        }
+        SocioDTO info = socioService.obtenerInformacionParaSolicitud(dni);
+        return ResponseEntity.ok(info);
     }
 }
