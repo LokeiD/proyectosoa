@@ -44,7 +44,7 @@ txtDniBuscar.addEventListener('blur', async function() {
         document.body.style.cursor = 'wait';
         limpiarCamposSocio();
 
-        const response = await fetch(`${API_URL}/socios/buscar/${dni}`);
+        const response = await fetch(`${API_URL}/socio/buscar/${dni}`);
 
         if (!response.ok) {
             const mensajeError = await response.text();
