@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créditos - COOPAC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/solicitud.css">
+</head>
+
+<body>
+
+<div class="d-flex" id="wrapper">
+    <div class="bg-light border-end" id="sidebar-wrapper">
+        <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
+            <img src="img/logotipo.png" alt="Logo" width="200" class="mb-2">
+        </div>
+        <div class="list-group list-group-flush my-3">
+            <p class="text-muted small fw-bold px-3">MENU</p>
+            <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold">
+                <i class="fas fa-chart-bar me-2"></i> INICIOS
+            </a>
+
+            <div class="list-group-item bg-transparent p-0">
+                <button
+                        class="btn btn-toggle d-inline-flex align-items-center rounded border-0 list-group-item-action w-100"
+                        data-bs-toggle="collapse" data-bs-target="#creditos-collapse" aria-expanded="true">
+                    <i class="fa-solid fa-credit-card me-2"></i> CREDITOS
+                </button>
+                <div class="collapse show" id="creditos-collapse">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                        <li><a href="dashboard.html"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded active-submenu">SOLICITUD
+                            DE CREDITO</a></li>
+                        <li><a href="observadas.html"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">SOLICITUD
+                            OBSERVADA</a></li>
+                        <li><a href="rechazadas.html"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">SOLICITUD
+                            RECHAZADA</a></li>
+                        <li><a href="evaluacion.html"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">EVALUACION DE
+                            CREDITO</a></li>
+                        <li><a href="desembolso.html"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">DESEMBOLSO DE
+                            CREDITO</a></li>
+                    </ul>
+                </div>
+            </div>
+            <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold">
+                <i class="fas fa-file-invoice-dollar me-2"></i> CAPTACIONES
+            </a>
+        </div>
+    </div>
+
+    <div id="page-content-wrapper">
+        <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
+            <div class="d-flex align-items-center">
+                <span class="text-muted text-uppercase small">Menu / Creditos / Solicitud</span>
+            </div>
+        </nav>
+
+        <div class="container-fluid px-4">
+            <button class="btn btn-success btn-lg mb-4 shadow-sm text-white fw-bold" style="border-radius: 8px;"
+                    data-bs-toggle="modal" data-bs-target="#modalNuevaSolicitud">
+                NUEVA SOLICITUD DE CREDITO
+            </button>
+
+            <div class="input-group input-group-lg mb-4 bg-white shadow-sm rounded-3 overflow-hidden border-0">
+                    <span class="input-group-text bg-white border-0 ps-4"><i
+                            class="fas fa-search text-muted"></i></span>
+                <input type="text" id="searchInput" class="form-control border-0 bg-light-gray"
+                       placeholder="BUSCAR POR NOMBRE | APELLIDO | DNI">
+            </div>
+
+            <div class="d-flex align-items-center mb-3">
+                <h4 class="fw-bold m-0 me-3">SOLICITUDES DE CREDITO</h4>
+                <span class="badge bg-purple-light text-purple rounded-pill px-3 py-2">15 SOLICITUDES</span>
+            </div>
+
+            <div class="table-responsive bg-white p-3 rounded-3 shadow-sm">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light text-muted small text-uppercase">
+                    <tr>
+                        <th>N° Solicitud</th>
+                        <th>Fecha</th>
+                        <th>DNI</th>
+                        <th style="width: 20%; min-width: 150px;">Nombres y Apellidos</th>
+                        <th>Producto Financiero</th>
+                        <th>Monto</th>
+                        <th>Cuotas</th>
+                        <th>Periodo</th>
+                        <th style="min-width: 300px;">Expediente</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tablaCreditos">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-4 mb-5">
+                <button class="btn btn-outline-secondary px-4 rounded-pill"><i class="fas fa-arrow-left me-2"></i>
+                    Anterior
+                </button>
+                <div class="pagination-numbers text-muted">
+                    <span class="fw-bold text-dark mx-2">1</span> 2 3 ... 8 9 10
+                </div>
+                <button class="btn btn-outline-secondary px-4 rounded-pill">Siguiente <i
+                        class="fas fa-arrow-right ms-2"></i></button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<input type="file" id="globalFileInput" style="display: none;" accept=".pdf">
+
+<div class="modal fade" id="modalNuevaSolicitud" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-body p-4">
+
+                <div class="section-header header-green mb-3">
+                    ::: FORMULARIO DE SOLICITUD DE CRÉDITOS :::
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">DNI DEL SOCIO</label>
+                        <input type="text" id="txtDniBuscar" class="form-control text-center" placeholder="Ingrese DNI">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">MONTO SOLICITADO</label>
+                        <input type="number" id="txtMonto" class="form-control text-center" value="0.00">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">N° DE CUOTAS</label>
+                        <input type="number" id="txtCuotas" class="form-control text-center" value="1">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">PERIODO</label>
+                        <select class="form-select" id="cboPeriodo">
+                            <option selected disabled>Cargando...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">ACTIVIDAD</label>
+                        <input type="text" id="txtActividad" class="form-control">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">T.E.M. [%]</label>
+                        <input type="text" id="txtTem" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">T.E.A. [%]</label>
+                        <input type="text" id="txtTea" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">RECURRENCIA</label>
+                        <select class="form-select" id="cboRecurrencia">
+                            <option selected disabled>Cargando...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">RIESGO T.L.C</label>
+                        <select class="form-select" id="cboRiesgo">
+                            <option selected disabled>Cargando...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">PRODUCTO FINANCIERO</label>
+                        <select class="form-select" id="cboProducto">
+                            <option selected disabled>Cargando...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-header header-lime mb-3">
+                    ::: DATOS DE PERSONALES DEL SOCIO :::
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">TIPO</label>
+                        <input type="text" class="form-control text-center" value="PERSONA NATURAL" readonly>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">DNI</label>
+                        <input type="text" id="txtDniResultado" class="form-control text-center" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">NOMBRES Y APELLIDOS</label>
+                        <input type="text" id="txtNombreCompleto" class="form-control text-center" readonly>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">N° REGISTRO</label>
+                        <input type="text" id="txtNRegistro" class="form-control text-center" readonly>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">EDAD</label>
+                        <input type="text" id="txtEdad" class="form-control text-center" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">FECHA DE NACIMIENTO</label>
+                        <input type="text" id="txtFechaNacimiento" class="form-control text-center" readonly>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold">ESTADO CIVIL</label>
+                        <input type="text" id="txtEstadoCivil" class="form-control text-center" readonly>
+                    </div>
+                </div>
+
+                <div class="section-header header-orange mb-3">
+                    ::: DATOS DE RESIDENCIA :::
+                </div>
+                <div class="row g-3 mb-5">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">DOMICILIO</label>
+                        <input type="text" id="txtDomicilio" class="form-control text-center" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">DEPARTAMENTO</label>
+                        <input type="text" id="txtDepartamento" class="form-control text-center" readonly>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">PROVINCIA</label>
+                        <input type="text" id="txtProvincia" class="form-control text-center" readonly>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">DISTRITO</label>
+                        <input type="text" id="txtDistrito" class="form-control text-center" readonly>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">SECTOR</label>
+                        <input type="text" id="txtSector" class="form-control text-center" readonly>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3">
+                    <button type="button" class="btn btn-danger px-4 py-2 fw-bold" data-bs-dismiss="modal"
+                            style="background-color: #c0392b; border: none;">
+                        CANCELAR
+                    </button>
+                    <button type="button" class="btn btn-success px-4 py-2 fw-bold" id="btnRegistrar"
+                            style="background-color: #2ecc71; border: none;">
+                        REGISTRAR SOLICITUD
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/solicitud.js"></script>
+</body>
+
+</html>
