@@ -1,0 +1,111 @@
+openapi: 3.0.3
+info:
+  title: API Sistema SOA - Gestión de Socios
+  description: API para la gestión y consulta de socios de la cooperativa.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Servidor Local
+paths:
+  /socio/buscar/{dni}:
+    get:
+      tags:
+        - Socio Controller
+      summary: Buscar socio por DNI
+      description: Obtiene la información necesaria de un socio para una solicitud basada en su DNI.
+      operationId: buscarSocioPorDni
+      parameters:
+        - name: dni
+          in: path
+          description: Documento Nacional de Identidad del socio.
+          required: true
+          schema:
+            type: string
+            example: "12345678"
+      responses:
+        '200':
+          description: Información del socio encontrada exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocioDTO'
+        '400':
+          description: Error de Negocio / Solicitud Incorrecta (SoaException)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Socio no encontrado (Si decides devolver 404 HTTP)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error inesperado del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    SocioDTO:
+      type: object
+      properties:
+        codSocio:
+          type: integer
+          description: Código interno del socio
+          example: 10054
+        dni:
+          type: string
+          description: Documento Nacional de Identidad
+          example: "45678912"
+        nombresCompletos:
+          type: string
+          description: Nombre completo del socio
+          example: "Juan Alberto Pérez López"
+        edad:
+          type: integer
+          description: Edad del socio
+          example: 35
+        fechaNacimiento:
+          type: string
+          format: date
+          description: Fecha de nacimiento en formato YYYY-MM-DD
+          example: "1988-05-20"
+        estadoCivil:
+          type: string
+          description: Estado civil (Soltero, Casado, Viudo, Divorciado)
+          example: "Casado"
+        domicilio:
+          type: string
+          description: Dirección de residencia
+          example: "Av. Grau 123"
+        departamento:
+          type: string
+          description: Departamento de residencia
+          example: "Lambayeque"
+        provincia:
+          type: string
+          description: Provincia de residencia
+          example: "Chiclayo"
+        distrito:
+          type: string
+          description: Distrito de residencia
+          example: "La Victoria"
+        sector:
+          type: string
+          description: Sector o zona específica
+          example: "Sector Norte"
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Código de error interno o HTTP
+          example: "404"
+        mesagge:
+          type: string
+          description: Mensaje descriptivo del error
+          example: "No se encontró socio con DNI: 12345678"

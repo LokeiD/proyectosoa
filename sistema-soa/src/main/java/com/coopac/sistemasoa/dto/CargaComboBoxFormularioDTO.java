@@ -1,5 +1,8 @@
 package com.coopac.sistemasoa.dto;
-import com.coopac.sistemasoa.model.*;
+import com.coopac.sistemasoa.expediente.model.Periodo;
+import com.coopac.sistemasoa.expediente.model.ProductoCrediticio;
+import com.coopac.sistemasoa.expediente.model.Recurrencia;
+import com.coopac.sistemasoa.expediente.model.Riesgo;
 import lombok.Data;
 import java.util.List;
 

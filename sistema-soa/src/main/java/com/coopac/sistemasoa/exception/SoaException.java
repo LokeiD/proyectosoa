@@ -10,5 +10,4 @@ import lombok.EqualsAndHashCode;
 public class SoaException extends RuntimeException{
     private String code;
     private String mesagge;
-
 }
