@@ -283,7 +283,7 @@ function generarColumnaExpediente(idSolicitud) {
     return html;
 }
 
-// Funciones Placeholder para los botones (puedes implementarlas luego)
+
 function enviarAEvaluacion(id) {
     alert(`Enviando solicitud ${id} a evaluación...`);
     // Aquí iría tu fetch PUT/POST para cambiar el estado

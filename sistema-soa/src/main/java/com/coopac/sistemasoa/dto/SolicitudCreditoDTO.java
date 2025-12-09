@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 
 @Data
 public class SolicitudCreditoDTO {
-    // Estos nombres deben ser IDÉNTICOS a los que usaste en tu dashboard.js (datosSolicitud)
     private String dniSocio;
     private BigDecimal montoSolicitado;
     private Integer codProducto;

@@ -29,7 +29,6 @@ public class SolicitudCreditoController {
             ExpedienteCredito nuevoExpediente = creditosService.registrarSolicitud(dto);
             return ResponseEntity.ok(nuevoExpediente);
         } catch (RuntimeException e) {
-            // Errores de validación (DNI no existe, monto 0, etc.)
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
