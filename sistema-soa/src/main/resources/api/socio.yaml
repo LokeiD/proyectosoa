@@ -10,7 +10,7 @@ paths:
   /socio/buscar/{dni}:
     get:
       tags:
-        - Socio Controller
+        - Socio
       summary: Buscar socio por DNI
       description: Obtiene la información necesaria de un socio para una solicitud basada en su DNI.
       operationId: buscarSocioPorDni
@@ -29,24 +29,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SocioDTO'
-        '400':
-          description: Error de Negocio / Solicitud Incorrecta (SoaException)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Socio no encontrado (Si decides devolver 404 HTTP)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Error inesperado del servidor
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
