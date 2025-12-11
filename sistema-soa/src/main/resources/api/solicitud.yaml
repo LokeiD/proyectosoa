@@ -1,0 +1,147 @@
+openapi: 3.0.3
+info:
+  title: API Sistema SOA - Gestión de Créditos
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  # --- ENDPOINTS SEPARADOS (Uno por entidad) ---
+
+  /credito/productos:
+    get:
+      tags:
+        - Catalogos
+      summary: Listar productos crediticios
+      operationId: listarProductos
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductoDTO'
+
+  /credito/recurrencias:
+    get:
+      tags:
+        - Catalogos
+      summary: Listar tipos de recurrencia
+      operationId: listarRecurrencias
+      responses:
+        '200':
+          description: Lista de recurrencias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecurrenciaDTO'
+
+  /credito/riesgos:
+    get:
+      tags:
+        - Catalogos
+      summary: Listar niveles de riesgo
+      operationId: listarRiesgos
+      responses:
+        '200':
+          description: Lista de riesgos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RiesgoDTO'
+
+  /credito/periodos:
+    get:
+      tags:
+        - Catalogos
+      summary: Listar periodos
+      operationId: listarPeriodos
+      responses:
+        '200':
+          description: Lista de periodos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PeriodoDTO'
+
+  # --- Tu endpoint de registro sigue igual ---
+  /credito/solicitar:
+    post:
+      tags:
+        - Credito
+      summary: Registrar solicitud
+      operationId: registrarSolicitud
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolicitudCreditoDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolicitudCreditoDTO'
+
+components:
+  schemas:
+    # --- DTOs INDIVIDUALES ---
+    ProductoDTO:
+      type: object
+      properties:
+        codProducto:
+          type: integer
+        nombre:
+          type: string
+
+    RecurrenciaDTO:
+      type: object
+      properties:
+        codRecurrencia:
+          type: integer
+        nombre:
+          type: string
+
+    RiesgoDTO:
+      type: object
+      properties:
+        codRiesgo:
+          type: integer
+        descripcion:
+          type: string
+
+    PeriodoDTO:
+      type: object
+      properties:
+        codPeriodo:
+          type: integer
+        descripcion:
+          type: string
+
+    SolicitudCreditoDTO:
+      type: object
+      properties:
+        dniSocio:
+          type: string
+        montoSolicitado:
+          type: number
+        codProducto:
+          type: integer
+        codRecurrencia:
+          type: integer
+        codRiesgo:
+          type: integer
+        codPeriodo:
+          type: integer
+        actividad:
+          type: string
+        codTrabajador:
+          type: integer

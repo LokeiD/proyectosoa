@@ -7,15 +7,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function cargarListasDesplegables() {
     try {
-        const response = await fetch(`${API_URL}/creditos/datos-formulario`);
-        if (!response.ok) throw new Error('Error conectando con el servicio de datos');
+        const [prodRes, recuRes, riesRes, periRes] = await Promise.all([
+            fetch(`${API_URL}/creditos/productos`),
+            fetch(`${API_URL}/creditos/recurrencias`),
+            fetch(`${API_URL}/creditos/riesgos`),
+            fetch(`${API_URL}/creditos/periodos`)
+        ]);
 
-        const data = await response.json();
+        if (!prodRes.ok || !recuRes.ok || !riesRes.ok || !periRes.ok) {
+            throw new Error('Error conectando con los catálogos del servicio');
+        }
 
-        llenarSelect('cboProducto', data.productos, 'codProducto', 'nombreProducto');
-        llenarSelect('cboRecurrencia', data.recurrencias, 'codRecurrencia', 'nombreRecurrencia');
-        llenarSelect('cboRiesgo', data.riesgos, 'codRiesgo', 'nombreRiesgo');
-        llenarSelect('cboPeriodo', data.periodos, 'codPeriodo', 'nombrePeriodo');
+        const productos = await prodRes.json();
+        const recurrencias = await recuRes.json();
+        const riesgos = await riesRes.json();
+        const periodos = await periRes.json();
+
+        llenarSelect('cboProducto', productos, 'codProducto', 'nombre');
+        llenarSelect('cboRecurrencia', recurrencias, 'codRecurrencia', 'nombre');
+        llenarSelect('cboRiesgo', riesgos, 'codRiesgo', 'descripcion');
+        llenarSelect('cboPeriodo', periodos, 'codPeriodo', 'descripcion');
 
     } catch (error) {
         console.error(error);

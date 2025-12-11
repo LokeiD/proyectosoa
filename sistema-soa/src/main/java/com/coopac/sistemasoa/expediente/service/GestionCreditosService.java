@@ -1,7 +1,7 @@
 package com.coopac.sistemasoa.expediente.service;
 
-import com.coopac.sistemasoa.dto.CargaComboBoxFormularioDTO;
-import com.coopac.sistemasoa.dto.SolicitudCreditoDTO;
+import com.coopac.sistemasoa.credito.model.dto.ProductoDTO;
+import com.coopac.sistemasoa.credito.model.dto.*;
 import com.coopac.sistemasoa.empleado.repository.TrabajadorRepository;
 import com.coopac.sistemasoa.exception.SoaException;
 import com.coopac.sistemasoa.expediente.model.ExpedienteCredito;
@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GestionCreditosService {
@@ -27,13 +28,48 @@ public class GestionCreditosService {
     @Autowired private PeriodoRepository periodoRepository;
     @Autowired private TrabajadorRepository trabajadorRepository;
 
-    public CargaComboBoxFormularioDTO obtenerDatosCombos() {
-        CargaComboBoxFormularioDTO dto = new CargaComboBoxFormularioDTO();
-        dto.setProductos(productoRepository.findAll());
-        dto.setRecurrencias(recurrenciaRepository.findAll());
-        dto.setRiesgos(riesgoRepository.findAll());
-        dto.setPeriodos(periodoRepository.findAll());
-        return dto;
+    public List<ProductoDTO> listarProductos() {
+        return productoRepository.findAll().stream()
+                .map(entity -> {
+                    ProductoDTO dto = new ProductoDTO();
+                    dto.setCodProducto(entity.getCodProducto());
+                    dto.setNombre(entity.getNombreProducto());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<RecurrenciaDTO> listarRecurrencias() {
+        return recurrenciaRepository.findAll().stream()
+                .map(entity -> {
+                    RecurrenciaDTO dto = new RecurrenciaDTO();
+                    dto.setCodRecurrencia(entity.getCodRecurrencia());
+                    dto.setNombre(entity.getNombreRecurrencia());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<RiesgoDTO> listarRiesgos() {
+        return riesgoRepository.findAll().stream()
+                .map(entity -> {
+                    RiesgoDTO dto = new RiesgoDTO();
+                    dto.setCodRiesgo(entity.getCodRiesgo());
+                    dto.setDescripcion(entity.getNombreRiesgo());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<PeriodoDTO> listarPeriodos() {
+        return periodoRepository.findAll().stream()
+                .map(entity -> {
+                    PeriodoDTO dto = new PeriodoDTO();
+                    dto.setCodPeriodo(entity.getCodPeriodo());
+                    dto.setDescripcion(entity.getNombrePeriodo());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional

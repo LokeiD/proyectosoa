@@ -1,7 +1,6 @@
 package com.coopac.sistemasoa.expediente.controller;
 
-import com.coopac.sistemasoa.dto.CargaComboBoxFormularioDTO;
-import com.coopac.sistemasoa.dto.SolicitudCreditoDTO;
+import com.coopac.sistemasoa.credito.model.dto.*;
 import com.coopac.sistemasoa.expediente.model.ExpedienteCredito;
 import com.coopac.sistemasoa.expediente.service.GestionCreditosService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +17,24 @@ public class SolicitudCreditoController {
     @Autowired
     private GestionCreditosService creditosService;
 
-    @GetMapping("/datos-formulario")
-    public ResponseEntity<CargaComboBoxFormularioDTO> obtenerDatosFormulario() {
-        return ResponseEntity.ok(creditosService.obtenerDatosCombos());
+    @GetMapping("/productos")
+    public ResponseEntity<List<ProductoDTO>> listarProductos() {
+        return ResponseEntity.ok(creditosService.listarProductos());
+    }
+
+    @GetMapping("/recurrencias")
+    public ResponseEntity<List<RecurrenciaDTO>> listarRecurrencias() {
+        return ResponseEntity.ok(creditosService.listarRecurrencias());
+    }
+
+    @GetMapping("/riesgos")
+    public ResponseEntity<List<RiesgoDTO>> listarRiesgos() {
+        return ResponseEntity.ok(creditosService.listarRiesgos());
+    }
+
+    @GetMapping("/periodos")
+    public ResponseEntity<List<PeriodoDTO>> listarPeriodos() {
+        return ResponseEntity.ok(creditosService.listarPeriodos());
     }
 
     @PostMapping("/solicitud")
