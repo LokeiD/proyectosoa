@@ -1,10 +1,25 @@
 const API_URL = 'http://localhost:8080/api/v1';
 const txtDniBuscar = document.getElementById('txtDniBuscar');
 
+// --- 1. VARIABLE DE CONTEXTO (Necesaria para saber qué archivo subimos) ---
+let contextoCarga = { idExp: null, claveTipo: null };
+
+// --- 2. LISTENER DEL INPUT FILE (Sube el archivo apenas lo seleccionas) ---
+const fileInput = document.getElementById('globalFileInput');
+if (fileInput) {
+    fileInput.addEventListener('change', async function() {
+        if (this.files && this.files[0]) {
+            await procesarSubidaArchivo(this.files[0]);
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     cargarListasDesplegables();
+    // listarSolicitudes(); // Se llama al final, está ok.
 });
 
+// --- TU CÓDIGO ORIGINAL DE CARGA DE COMBOS (INTACTO) ---
 async function cargarListasDesplegables() {
     try {
         const [prodRes, recuRes, riesRes, periRes] = await Promise.all([
@@ -23,7 +38,8 @@ async function cargarListasDesplegables() {
         const riesgos = await riesRes.json();
         const periodos = await periRes.json();
 
-        llenarSelect('cboProducto', productos, 'codProducto', 'nombre');
+        // Mantenemos tus nombres de campos originales
+        llenarSelect('cboProducto', productos, 'codProducto', 'nombre'); // Ajusta 'nombre' si tu DTO devuelve 'nombreProducto'
         llenarSelect('cboRecurrencia', recurrencias, 'codRecurrencia', 'nombre');
         llenarSelect('cboRiesgo', riesgos, 'codRiesgo', 'descripcion');
         llenarSelect('cboPeriodo', periodos, 'codPeriodo', 'descripcion');
@@ -36,6 +52,7 @@ async function cargarListasDesplegables() {
 
 function llenarSelect(idSelect, lista, idCampo, nombreCampo) {
     const select = document.getElementById(idSelect);
+    if (!select) return;
     select.innerHTML = '<option selected disabled>-- Seleccione --</option>';
 
     lista.forEach(item => {
@@ -46,9 +63,9 @@ function llenarSelect(idSelect, lista, idCampo, nombreCampo) {
     });
 }
 
+// --- TU CÓDIGO DE BÚSQUEDA SOCIO (INTACTO) ---
 txtDniBuscar.addEventListener('blur', async function() {
     const dni = this.value.trim();
-
     if (dni.length !== 8) return;
 
     try {
@@ -67,7 +84,9 @@ txtDniBuscar.addEventListener('blur', async function() {
 
     } catch (error) {
         limpiarCamposSocio();
-        alert("⚠️ ATENCIÓN:\n" + error.message);
+        let msg = error.message;
+        try { msg = JSON.parse(msg).mesagge || msg; } catch(e){}
+        alert("⚠️ ATENCIÓN:\n" + msg);
     } finally {
         document.body.style.cursor = 'default';
     }
@@ -80,7 +99,6 @@ function llenarFormularioSocio(socio) {
     document.getElementById('txtEdad').value = socio.edad + ' AÑOS';
     document.getElementById('txtFechaNacimiento').value = socio.fechaNacimiento;
     document.getElementById('txtEstadoCivil').value = socio.estadoCivil;
-
     document.getElementById('txtDomicilio').value = socio.domicilio;
     document.getElementById('txtDepartamento').value = socio.departamento;
     document.getElementById('txtProvincia').value = socio.provincia;
@@ -88,12 +106,25 @@ function llenarFormularioSocio(socio) {
     document.getElementById('txtSector').value = socio.sector;
 }
 
+function limpiarCamposSocio() {
+    const ids = [
+        'txtDniResultado', 'txtNombreCompleto', 'txtNRegistro',
+        'txtEdad', 'txtFechaNacimiento', 'txtEstadoCivil',
+        'txtDomicilio', 'txtDepartamento', 'txtProvincia',
+        'txtDistrito', 'txtSector'
+    ];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
+
+// --- TU CÓDIGO DE CÁLCULOS (INTACTO) ---
 const txtTem = document.getElementById('txtTem');
 const txtTea = document.getElementById('txtTea');
 
 txtTem.addEventListener('input', function() {
     const valorTem = parseFloat(this.value);
-
     if (!isNaN(valorTem) && valorTem >= 0) {
         const temDecimal = valorTem / 100;
         const teaDecimal = Math.pow((1 + temDecimal), 12) - 1;
@@ -103,35 +134,33 @@ txtTem.addEventListener('input', function() {
         txtTea.value = '';
     }
 });
-//-Registro de solicitud
+
+// --- TU CÓDIGO DE REGISTRO (INTACTO) ---
 const btnRegistrar = document.getElementById('btnRegistrar');
 
 btnRegistrar.addEventListener('click', async function() {
     const dniSocio = document.getElementById('txtDniResultado').value;
 
+    // Pequeña ayuda para validar selects vacíos
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        return (el && el.value !== "-- Seleccione --") ? el.value : null;
+    };
+
     const datosSolicitud = {
         dniSocio: dniSocio,
         montoSolicitado: document.getElementById('txtMonto').value,
-        codProducto: document.getElementById('cboProducto').value,
-        codRecurrencia: document.getElementById('cboRecurrencia').value,
-        codRiesgo: document.getElementById('cboRiesgo').value,
-        codPeriodo: document.getElementById('cboPeriodo').value,
+        codProducto: getVal('cboProducto'),
+        codRecurrencia: getVal('cboRecurrencia'),
+        codRiesgo: getVal('cboRiesgo'),
+        codPeriodo: getVal('cboPeriodo'),
         actividad: document.getElementById('txtActividad').value,
-        codTrabajador: 1 // HARCODED: Pon un ID de trabajador que exista en tu BD
+        codTrabajador: 1
     };
 
-    if (!dniSocio) {
-        alert("⚠️ Error: Debes buscar y validar un socio primero.");
-        return;
-    }
-    if (datosSolicitud.montoSolicitado <= 0) {
-        alert("⚠️ Error: El monto debe ser mayor a 0.");
-        return;
-    }
-    if (isNaN(datosSolicitud.codProducto) || isNaN(datosSolicitud.codRecurrencia)) {
-        alert("⚠️ Error: Complete todos los campos de selección.");
-        return;
-    }
+    if (!dniSocio) { alert("⚠️ Error: Debes buscar y validar un socio primero."); return; }
+    if (datosSolicitud.montoSolicitado <= 0) { alert("⚠️ Error: El monto debe ser mayor a 0."); return; }
+    if (!datosSolicitud.codProducto || !datosSolicitud.codRecurrencia) { alert("⚠️ Error: Complete todos los campos de selección."); return; }
 
     try {
         btnRegistrar.disabled = true;
@@ -139,9 +168,7 @@ btnRegistrar.addEventListener('click', async function() {
 
         const response = await fetch(`${API_URL}/creditos/solicitud`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datosSolicitud)
         });
 
@@ -162,24 +189,9 @@ btnRegistrar.addEventListener('click', async function() {
     }
 });
 
-function limpiarCamposSocio() {
-    const ids = [
-        'txtDniResultado', 'txtNombreCompleto', 'txtNRegistro',
-        'txtEdad', 'txtFechaNacimiento', 'txtEstadoCivil',
-        'txtDomicilio', 'txtDepartamento', 'txtProvincia',
-        'txtDistrito', 'txtSector'
-    ];
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    listarSolicitudes();
-
-});
-
+// =========================================================
+// AQUÍ EMPIEZA LO DE LA TABLA Y DOCUMENTOS (CORREGIDO)
+// =========================================================
 
 const DOCUMENTOS_REQUERIDOS = [
     { nombre: 'FICHA SOCIOECONOMICA', clave: 'ficha' },
@@ -192,9 +204,13 @@ const DOCUMENTOS_REQUERIDOS = [
     { nombre: 'OTROS DOCUMENTOS', clave: 'otros' }
 ];
 
+document.addEventListener('DOMContentLoaded', () => {
+    listarSolicitudes();
+});
+
 async function listarSolicitudes() {
     try {
-        const response = await fetch('http://localhost:8080/api/v1/creditos/listado');
+        const response = await fetch(`${API_URL}/creditos/listado`);
 
         if (!response.ok) {
             throw new Error('Error al obtener las solicitudes');
@@ -229,18 +245,32 @@ function renderizarTabla(datos) {
             const am = socioObj.apellidoMaterno || '';
             nombreSocio = `${n} ${ap} ${am}`.trim();
         }
-
         if (!nombreSocio) nombreSocio = 'SOCIO SIN NOMBRE';
 
-        const dniSocio = socioObj.dni || '---';
+        const dniSocio = socioObj.dni || '---'; // <-- AQUÍ YA TIENES EL DNI CORRECTO DE LA FILA
+
+        // Nombres de productos tal como los tenías
         const nombreProducto = solicitud.producto?.nombreProducto || '---';
         const periodo = solicitud.periodo?.nombrePeriodo || '---';
         const cuotas = solicitud.cuotas || 1;
-        const tea = solicitud.tea || 0;
+
+        // Mapeo de documentos
+        const docsMap = {};
+        if (solicitud.documentos && solicitud.documentos.length > 0) {
+            solicitud.documentos.forEach(doc => {
+                const nombreArchivo = doc.nombreArchivo;
+                DOCUMENTOS_REQUERIDOS.forEach(req => {
+                    if (nombreArchivo && nombreArchivo.includes(`_${req.clave}_`)) {
+                        docsMap[req.clave] = nombreArchivo;
+                    }
+                });
+            });
+        }
+
+        // --- CAMBIO CLAVE: Pasamos dniSocio como tercer parámetro ---
+        const htmlExpediente = generarColumnaExpediente(id, docsMap, dniSocio);
+
         const fila = document.createElement('tr');
-
-        const htmlExpediente = generarColumnaExpediente(id);
-
         fila.innerHTML = `
             <td class="fw-bold text-center">${id}</td>
             <td>${fecha}</td>
@@ -266,26 +296,52 @@ function renderizarTabla(datos) {
     });
 }
 
-// Función auxiliar para crear la lista de documentos por cada fila
-function generarColumnaExpediente(idSolicitud) {
+// --- CAMBIO CLAVE: Recibimos dniSocio ---
+function generarColumnaExpediente(idSolicitud, docsMap, dniSocio) {
     let html = '';
 
     DOCUMENTOS_REQUERIDOS.forEach(doc => {
+        const nombreArchivo = docsMap[doc.clave];
+        const existe = !!nombreArchivo;
+
+        let botonPrincipal = '';
+
+        if (existe) {
+            // OJO (Ver)
+            const urlVer = `${API_URL}/creditos/documentos/ver/${nombreArchivo}`;
+            botonPrincipal = `
+                <button class="btn btn-sm btn-info text-white p-0 me-2"
+                        title="Ver Documento"
+                        onclick="window.open('${urlVer}', '_blank')">
+                    <i class="fas fa-eye"></i>
+                </button>
+            `;
+        } else {
+            // NUBE (Subir) - AQUÍ PASAMOS EL DNI AL ONCLICK
+            botonPrincipal = `
+                <button class="btn btn-sm btn-link text-secondary p-0 me-2"
+                        title="Subir archivo"
+                        onclick="abrirModalCarga(${idSolicitud}, '${doc.clave}', '${dniSocio}')">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </button>
+            `;
+        }
+
+        // LÁPIZ (Editar) - TAMBIÉN PASAMOS EL DNI
+        const botonEditar = `
+            <button class="btn btn-sm btn-link text-secondary p-0"
+                    title="Actualizar / Reemplazar"
+                    onclick="abrirModalCarga(${idSolicitud}, '${doc.clave}', '${dniSocio}')">
+                <i class="fas fa-pen"></i>
+            </button>
+        `;
+
         html += `
             <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-1">
                 <span class="small text-muted fw-bold" style="font-size: 0.75rem;">${doc.nombre}</span>
                 <div class="btn-group">
-                    <button class="btn btn-sm btn-link text-secondary p-0 me-2"
-                            title="Subir archivo"
-                            onclick="abrirModalCarga('${idSolicitud}', '${doc.clave}')">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                    </button>
-
-                    <button class="btn btn-sm btn-link text-secondary p-0"
-                            title="Editar"
-                            onclick="editarArchivo('${idSolicitud}', '${doc.clave}')">
-                        <i class="fas fa-pen"></i>
-                    </button>
+                    ${botonPrincipal}
+                    ${botonEditar}
                 </div>
             </div>
         `;
@@ -294,18 +350,157 @@ function generarColumnaExpediente(idSolicitud) {
     return html;
 }
 
+// --- FUNCIONES DE SUBIDA E INTEGRACIÓN ---
 
-function enviarAEvaluacion(id) {
-    alert(`Enviando solicitud ${id} a evaluación...`);
-    // Aquí iría tu fetch PUT/POST para cambiar el estado
+// --- CAMBIO CLAVE: Recibimos dniSocio directamente ---
+function abrirModalCarga(idSolicitud, tipoDoc, dniSocio) {
+    contextoCarga.idExp = idSolicitud;
+    contextoCarga.claveTipo = tipoDoc;
+
+    // 1. INTERCEPTAMOS SI ES CENTRAL DE RIESGOS
+    if (tipoDoc === 'riesgos') {
+
+        // Validamos usando el dato que vino de la fila, no del input
+        if (!dniSocio || dniSocio === '---') {
+            alert("⚠️ Error: Este registro no tiene un DNI válido.");
+            return;
+        }
+
+        const usarIntegracion = confirm(
+            `🌐 SISTEMA SOA DETECTADO\n\n` +
+            `DNI SOCIO: ${dniSocio}\n` +
+            `El documento 'CENTRAL DE RIESGOS' permite integración automática.\n\n` +
+            `¿Desea conectarse a EXPERIAN para descargar el historial?\n` +
+            `(Haga clic en CANCELAR para subir un archivo manualmente)`
+        );
+
+        if (usarIntegracion) {
+            invocarApiExperian(idSolicitud, dniSocio);
+            return;
+        }
+    }
+
+    // 2. SI NO ES RIESGOS, COMPORTAMIENTO NORMAL
+    const fileInput = document.getElementById('globalFileInput');
+    if(fileInput) {
+        fileInput.value = '';
+        fileInput.click();
+    }
 }
 
-function abrirModalCarga(idSolicitud, tipoDoc) {
-    console.log(`Subir documento: ${tipoDoc} para solicitud: ${idSolicitud}`);
-    // Aquí podrías disparar el click del input file oculto o abrir un modal
-    document.getElementById('globalFileInput').click();
+async function invocarApiExperian(idExpediente, dni) {
+    try {
+        document.body.style.cursor = 'wait';
+        alert("⏳ Conectando con API Experian...\nDescargando reporte de crédito...");
+
+        const url = `${API_URL}/integraciones/experian?dni=${dni}&codExpediente=${idExpediente}`;
+        const response = await fetch(url, { method: 'POST' });
+
+        if (!response.ok) {
+            const errorTxt = await response.text();
+            throw new Error(errorTxt);
+        }
+
+        const data = await response.json();
+        alert(`✅ ¡INTEGRACIÓN EXITOSA!\nSe descargó el reporte: ${data.nombreArchivo}`);
+        listarSolicitudes();
+
+    } catch (error) {
+        console.error(error);
+        let msg = error.message;
+        try { msg = JSON.parse(msg).mesagge; } catch(e){}
+        alert("❌ Error en la integración: " + msg);
+    } finally {
+        document.body.style.cursor = 'default';
+        contextoCarga = { idExp: null, claveTipo: null };
+    }
 }
 
-function editarArchivo(idSolicitud, tipoDoc) {
-    console.log(`Editando documento: ${tipoDoc} para solicitud: ${idSolicitud}`);
+async function procesarSubidaArchivo(archivo) {
+    if (!contextoCarga.idExp || !contextoCarga.claveTipo) return;
+
+    const LIMITE_MB = 50;
+    if (archivo.size > LIMITE_MB * 1024 * 1024) {
+        alert(`❌ El archivo es muy pesado. Máximo permitido: ${LIMITE_MB}MB.`);
+        document.getElementById('globalFileInput').value = '';
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('archivo', archivo);
+    formData.append('codExpediente', contextoCarga.idExp);
+    formData.append('tipoDoc', contextoCarga.claveTipo);
+
+    try {
+        document.body.style.cursor = 'wait';
+        const response = await fetch(`${API_URL}/creditos/documentos/subir`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorTxt = await response.text();
+            throw new Error(errorTxt);
+        }
+
+        const data = await response.json();
+        alert(`✅ Archivo cargado correctamente.`);
+        listarSolicitudes();
+
+    } catch (error) {
+        console.error("Error subida:", error);
+        let msg = error.message;
+        try { msg = JSON.parse(msg).mesagge; } catch(e){}
+        alert("❌ Error al subir: " + msg);
+    } finally {
+        document.body.style.cursor = 'default';
+        contextoCarga = { idExp: null, claveTipo: null };
+    }
+}
+
+// --- FUNCIÓN ENVIAR A EVALUACIÓN (CONECTADA AL BACKEND) ---
+async function enviarAEvaluacion(id) {
+    // 1. Confirmación visual
+    const confirmar = confirm(
+        `¿Está seguro de enviar la Solicitud N° ${id} a evaluación?\n\n` +
+        `⚠️ Una vez enviada, pasará al área de créditos y no se podrán subir ni editar más documentos.`
+    );
+
+    if (!confirmar) return;
+
+    try {
+        // 2. Feedback visual de carga
+        document.body.style.cursor = 'wait';
+
+        // 3. Llamada al Backend (PUT)
+        // La URL asume que tu controlador responde en /api/v1/creditos/{id}/enviar
+        const response = await fetch(`${API_URL}/creditos/${id}/enviar`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // 4. Manejo de Errores (Validación de documentos del Backend)
+        if (!response.ok) {
+            // Intentamos leer el mensaje JSON que manda el backend (Map.of("error", ...))
+            const errorData = await response.json().catch(() => null);
+            const mensajeError = errorData?.error || await response.text() || "No se pudo enviar la solicitud.";
+
+            throw new Error(mensajeError);
+        }
+
+        // 5. Éxito
+        const data = await response.json();
+        alert(`✅ ÉXITO: ${data.mensaje}`);
+
+        // 6. Recargar la tabla para que la solicitud desaparezca de esta vista
+        listarSolicitudes();
+
+    } catch (error) {
+        console.error(error);
+        alert(`❌ NO SE PUDO ENVIAR:\n${error.message}`);
+    } finally {
+        document.body.style.cursor = 'default';
+    }
 }

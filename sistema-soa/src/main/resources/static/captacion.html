@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captaciones - COOPAC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/solicitud.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+</head>
+
+<body>
+
+<div class="d-flex" id="wrapper">
+    <div class="bg-light border-end" id="sidebar-wrapper">
+        <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
+            <img src="img/logo.png" alt="Logo" width="100" class="mb-2">
+        </div>
+        <div class="list-group list-group-flush my-3">
+            <p class="text-muted small fw-bold px-3">MENU</p>
+            <a href="dashboard.html"
+               class="list-group-item list-group-item-action bg-transparent second-text fw-bold">
+                <i class="fas fa-chart-bar me-2"></i> INICIOS
+            </a>
+
+            <div class="list-group-item bg-transparent p-0">
+                <button
+                        class="btn btn-toggle d-inline-flex align-items-center rounded border-0 list-group-item-action w-100 collapsed"
+                        data-bs-toggle="collapse" data-bs-target="#creditos-collapse" aria-expanded="false">
+                    <i class="fas fa-shopping-cart me-2"></i> CREDITOS
+                </button>
+                <div class="collapse" id="creditos-collapse">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                        <li><a href="solicitudRegistro.html"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">SOLICITUD DE
+                            CREDITO</a></li>
+                        <li><a href="observadas.html"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">SOLICITUDES
+                            OBSERVADAS</a></li>
+                        <li><a href="rechazadas.html"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">SOLICITUDES
+                            RECHAZADAS</a></li>
+                        <li><a href="evaluacion.html"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">EVALUACION DE
+                            CREDITO</a></li>
+                        <li><a href="desembolso.html"
+                               class="link-body-emphasis d-inline-flex text-decoration-none rounded">DESEMBOLSO DE
+                            CREDITO</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <a href="captacion.html"
+               class="list-group-item list-group-item-action bg-transparent second-text fw-bold active-submenu"
+               style="background-color: #e8f5e9; color: #28a745; border-left: 5px solid #28a745;">
+                <i class="fas fa-file-invoice-dollar me-2"></i> CAPTACIONES
+            </a>
+        </div>
+    </div>
+
+    <div id="page-content-wrapper">
+        <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
+            <div class="d-flex align-items-center">
+                <span class="text-muted text-uppercase small">Menu / Captaciones</span>
+            </div>
+        </nav>
+
+        <div class="container-fluid px-4">
+
+            <div class="input-group input-group-lg mb-4 bg-white shadow-sm rounded-3 overflow-hidden border-0">
+                    <span class="input-group-text bg-white border-0 ps-4"><i
+                            class="fas fa-search text-muted"></i></span>
+                <input type="text" id="searchInput" class="form-control border-0 bg-light-gray"
+                       placeholder="BUSCAR POR NOMBRE | APELLIDO | DNI">
+            </div>
+
+            <div class="mb-4">
+                <h4 class="fw-bold">CAPTACIONES</h4>
+            </div>
+
+            <div class="table-responsive bg-white p-3 rounded-3 shadow-sm">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light text-muted small text-uppercase">
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Fecha Inicio</th>
+                        <th>DNI</th>
+                        <th>Nombres y Apellidos</th>
+                        <th class="text-center">Monto Ahorrado</th>
+                        <th class="text-center">Operacion</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tablaCaptaciones">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-4 mb-5">
+                <button class="btn btn-outline-secondary px-4 rounded-pill"><i class="fas fa-arrow-left me-2"></i>
+                    Anterior</button>
+                <div class="pagination-numbers text-muted">
+                    <span class="fw-bold text-dark mx-2">1</span> 2
+                </div>
+                <button class="btn btn-outline-secondary px-4 rounded-pill">Siguiente <i
+                        class="fas fa-arrow-right ms-2"></i></button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalRetiro" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 10px;">
+            <div class="modal-body p-4">
+
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div class="d-flex flex-column">
+                        <img src="img/logotipo.png" alt="Logo Valle La Leche" style="width: 350px;">
+                    </div>
+
+                    <div class="d-flex flex-column gap-2 text-center" style="width: 300px;">
+                        <div class="receipt-box">RUC: 20487541256</div>
+                        <div class="receipt-box-light">RECIBO DE EGRESO</div>
+                        <div class="receipt-box" id="lblSerieRetiro">S001 - ----</div>
+                    </div>
+                </div>
+                <div class="section-header header-lime mb-4">
+                    ::: DATOS DE LA CUENTA :::
+                </div>
+
+                <div class="card mb-4 border shadow-sm" style="border-radius: 8px; background-color: #fff;">
+                    <div class="card-body py-3">
+                        <div class="row text-center align-items-center">
+
+                            <div class="col-md-3 border-end">
+                                    <span class="d-block text-secondary small fw-bold text-uppercase mb-1"
+                                          style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                        TIPO CUENTA
+                                    </span>
+                                <span class="d-block fw-bold text-dark">
+                                        AHORRO LIBRE
+                                    </span>
+                            </div>
+
+                            <div class="col-md-3 border-end">
+                                    <span class="d-block text-secondary small fw-bold text-uppercase mb-1"
+                                          style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                        MONEDA
+                                    </span>
+                                <span class="d-block fw-bold text-dark">
+                                        SOLES (S/)
+                                    </span>
+                            </div>
+
+                            <div class="col-md-3 border-end">
+                                    <span class="d-block text-secondary small fw-bold text-uppercase mb-1"
+                                          style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                        SALDO DISPONIBLE
+                                    </span>
+                                <span class="d-block fw-bold text-success fs-5" id="lblSaldoRetiro">
+                                        S/ 0.00
+                                    </span>
+                            </div>
+
+                            <div class="col-md-3">
+                                    <span class="d-block text-secondary small fw-bold text-uppercase mb-1"
+                                          style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                        CONDICIÓN
+                                    </span>
+                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                                        <i class="fas fa-user-check me-1"></i> HABILITADO
+                                    </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header header-lime mb-4">
+                    ::: DATOS DEL RECIBO :::
+                </div>
+
+                <form id="formRetiro">
+                    <input type="hidden" id="hdnIdCuentaRetiro"> <div class="row g-3 mb-5">
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">CUENTA DE AHORRO</label>
+                        <input type="text" class="form-control text-center" id="txtCuentaRetiro" readonly>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">DNI</label>
+                        <input type="text" class="form-control text-center" id="txtDniRetiro" readonly>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold">NOMBRES Y APELLIDOS</label>
+                        <input type="text" class="form-control text-center" id="txtNombreRetiro" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">MONTO DE RETIRO</label>
+                        <input type="number" class="form-control text-center fw-bold" id="txtMontoRetiro" placeholder="0.00" step="0.01">
+                    </div>
+                </div>
+
+                    <div class="d-flex justify-content-end gap-3">
+                        <button type="button" class="btn btn-danger px-5 py-2 fw-bold shadow-sm" data-bs-dismiss="modal"
+                                style="background-color: #c0392b; border-radius: 20px; border: none;">
+                            CANCELAR
+                        </button>
+                        <button type="submit" id="btnConfirmarRetiro" class="btn btn-success px-4 py-2 fw-bold shadow-sm"
+                                style="background-color: #37d158; border-radius: 20px; border: none;">
+                            REGISTRAR RETIRO
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAhorro" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 10px;">
+            <div class="modal-body p-4">
+
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div class="d-flex flex-column">
+                        <img src="img/logotipo.png" alt="Logo Valle La Leche" style="width: 350px;">
+                    </div>
+
+                    <div class="d-flex flex-column gap-2 text-center" style="width: 300px;">
+                        <div class="receipt-box">RUC: 20487541256</div>
+                        <div class="receipt-box-light">RECIBO DE CAPTACIÓN</div>
+                        <div class="receipt-box" id="lblSerieAhorro">S001 - ----</div>
+                    </div>
+                </div>
+
+                <div class="section-header header-lime mb-3">
+                    ::: DATOS DE LA CUENTA :::
+                </div>
+
+                <div class="card mb-4 border shadow-sm" style="border-radius: 8px; background-color: #fff;">
+                    <div class="card-body py-3">
+                        <div class="row text-center align-items-center">
+                            <div class="col-md-3 border-end">
+                                <span class="d-block text-secondary small fw-bold text-uppercase mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                    TIPO CUENTA
+                                </span>
+                                <span class="d-block fw-bold text-dark">
+                                    AHORRO LIBRE
+                                </span>
+                            </div>
+                            <div class="col-md-3 border-end">
+                                <span class="d-block text-secondary small fw-bold text-uppercase mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                    MONEDA
+                                </span>
+                                <span class="d-block fw-bold text-dark">
+                                    SOLES (S/)
+                                </span>
+                            </div>
+                            <div class="col-md-3 border-end">
+                                <span class="d-block text-secondary small fw-bold text-uppercase mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                    SALDO DISPONIBLE
+                                </span>
+                                <span class="d-block fw-bold text-success fs-5" id="lblSaldoAhorro">
+                                    S/ 0.00
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                <span class="d-block text-secondary small fw-bold text-uppercase mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                    CONDICIÓN
+                                </span>
+                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                                    <i class="fas fa-user-check me-1"></i> HABILITADO
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header header-lime mb-4">
+                    ::: DATOS DEL RECIBO :::
+                </div>
+
+                <form id="formAhorro">
+                    <input type="hidden" id="hdnIdCuentaAhorro"> <div class="row g-3 mb-5">
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">N° CUENTA</label>
+                        <input type="text" class="form-control text-center" id="txtCuentaAhorro" readonly>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">DNI</label>
+                        <input type="text" class="form-control text-center" id="txtDniAhorro" readonly>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold">NOMBRES Y APELLIDOS</label>
+                        <input type="text" class="form-control text-center" id="txtNombreAhorro" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">MONTO A DEPOSITAR</label>
+                        <input type="number" class="form-control text-center fw-bold" id="txtMontoAhorro" placeholder="0.00" step="0.01">
+                    </div>
+                </div>
+
+                    <div class="d-flex justify-content-end gap-3">
+                        <button type="button" class="btn btn-danger px-5 py-2 fw-bold shadow-sm" data-bs-dismiss="modal"
+                                style="background-color: #c0392b; border-radius: 20px; border: none;">
+                            CANCELAR
+                        </button>
+                        <button type="submit" id="btnConfirmarAhorro" class="btn btn-success px-4 py-2 fw-bold shadow-sm"
+                                style="background-color: #37d158; border-radius: 20px; border: none;">
+                            REGISTRAR AHORRO
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+<script src="js/captaciones.js"></script>
+</body>
+
+</html>

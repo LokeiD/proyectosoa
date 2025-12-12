@@ -1,0 +1,88 @@
+openapi: 3.0.3
+info:
+  title: API de Gestión de Cuentas de Ahorro
+  description: Contrato de servicio para la creación de registros en dbo.Cuenta_Ahorro.
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+    description: Servidor Principal
+
+paths:
+  /cuentas-ahorro:
+    post:
+      summary: Registrar una nueva cuenta de ahorro
+      description: >
+        Registra una nueva cuenta. Se envía el DTO con los datos necesarios y se
+        retorna el mismo DTO completado con el ID y fecha generados.
+      operationId: crearCuentaAhorro
+      tags:
+        - CuentaAhorro
+      requestBody:
+        description: Objeto con la información de la cuenta a crear.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CuentaAhorroDTO'
+      responses:
+        '201':
+          description: Cuenta creada exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuentaAhorroDTO'
+        '400':
+          description: Error de validación o datos incorrectos.
+        '500':
+          description: Error interno del servidor.
+
+components:
+  schemas:
+    CuentaAhorroDTO:
+      type: object
+      properties:
+        codCuenta:
+          type: integer
+          description: Código interno de la cuenta (PK). Null al crear, autogenerado en la respuesta.
+          example: 101
+        codSocio:
+          type: integer
+          description: Código del socio titular (FK).
+          example: 10
+        numeroCuenta:
+          type: string
+          description: Número de cuenta único.
+          example: "001-123456-99"
+        fechaApertura:
+          type: string
+          format: date
+          description: Fecha de registro. Se autogenera en el servidor.
+          example: "2023-10-27"
+        saldo:
+          type: number
+          format: double
+          description: Saldo actual o inicial de la cuenta.
+          example: 1500.50
+        codTrabajador:
+          type: integer
+          description: Código del trabajador que realizó el registro (FK).
+          example: 5
+        dni:
+          type: string
+          description: DNI del socio (Solo lectura para listados)
+        nombreCompleto:
+          type: string
+          description: Nombre concatenado del socio (Solo lectura para listados)
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Código de error
+          example: "400"
+        message:
+          type: string
+          description: Detalle del error
+          example: "El saldo inicial no puede ser negativo"

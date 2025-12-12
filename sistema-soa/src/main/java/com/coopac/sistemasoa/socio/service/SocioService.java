@@ -37,21 +37,21 @@ public class SocioService {
 
     private void validarSocioActivo(Socio socio) {
         if (Boolean.FALSE.equals(socio.getEstado())) {
-            throw new RuntimeException("El socio se encuentra INACTIVO.");
+            throw new SoaException("409", "El socio se encuentra INACTIVO.");
         }
     }
 
     private void validarMayoriaEdad(Socio socio) {
         int edad = calcularEdad(socio.getFechaNacimiento());
         if (edad < 18) {
-            throw new RuntimeException("El socio es menor de edad (" + edad + " años). No puede solicitar créditos.");
+            throw new SoaException("400", "El socio es menor de edad (" + edad + " años). No puede solicitar créditos.");
         }
     }
 
     private void validarAportesActivos(Socio socio) {
         boolean aportesActivos = aportesRepository.existsBySocioAndEstadoTrue(socio);
         if (!aportesActivos) {
-            throw new RuntimeException("El socio no cuenta con aportes ACTIVOS o no está al día.");
+            throw new SoaException("409", "El socio no cuenta con aportes ACTIVOS o no está al día.");
         }
     }
 

@@ -2,10 +2,12 @@ package com.coopac.sistemasoa.expediente.model;
 
 import com.coopac.sistemasoa.empleado.model.Trabajador;
 import com.coopac.sistemasoa.socio.model.Socio;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity
@@ -49,4 +51,11 @@ public class ExpedienteCredito {
 
     @Column(name = "Fecha_Solicitud")
     private LocalDate fechaSolicitud;
+
+    @Column(name = "Estado")
+    private Boolean estado;
+
+    @OneToMany(mappedBy = "expediente", fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<DocumentoExpediente> documentos;
 }

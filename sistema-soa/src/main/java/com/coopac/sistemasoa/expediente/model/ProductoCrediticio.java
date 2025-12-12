@@ -15,4 +15,6 @@ public class ProductoCrediticio {
 
     @Column(name = "Nombre_Producto", nullable = false, length = 100)
     private String nombreProducto;
+
+
 }

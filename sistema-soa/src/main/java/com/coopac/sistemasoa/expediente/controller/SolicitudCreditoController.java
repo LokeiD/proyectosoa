@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/creditos")
@@ -46,5 +47,15 @@ public class SolicitudCreditoController {
     @GetMapping("/listado")
     public ResponseEntity<List<ExpedienteCredito>> listarSolicitudes() {
         return ResponseEntity.ok(creditosService.listarTodas());
+    }
+
+    @PutMapping("/{id}/enviar")
+    public ResponseEntity<?> enviarEvaluacion(@PathVariable Integer id) {
+        try {
+            creditosService.enviarAEvaluacion(id);
+            return ResponseEntity.ok(Map.of("mensaje", "Expediente enviado a evaluación correctamente."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }

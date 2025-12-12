@@ -4,6 +4,7 @@ import com.coopac.sistemasoa.credito.model.dto.ProductoDTO;
 import com.coopac.sistemasoa.credito.model.dto.*;
 import com.coopac.sistemasoa.empleado.repository.TrabajadorRepository;
 import com.coopac.sistemasoa.exception.SoaException;
+import com.coopac.sistemasoa.expediente.model.DocumentoExpediente;
 import com.coopac.sistemasoa.expediente.model.ExpedienteCredito;
 import com.coopac.sistemasoa.expediente.repository.*;
 import com.coopac.sistemasoa.socio.model.Socio;
@@ -88,11 +89,39 @@ public class GestionCreditosService {
         expediente.setMontoSolicitado(dto.getMontoSolicitado());
         expediente.setActividad(dto.getActividad());
         expediente.setFechaSolicitud(LocalDate.now());
+        expediente.setEstado(false);
 
         return expedienteRepository.save(expediente);
     }
 
     public List<ExpedienteCredito> listarTodas() {
-        return expedienteRepository.findAll();
+        return expedienteRepository.findByEstado(false);
+    }
+
+    public void enviarAEvaluacion(Integer id) {
+        // 1. Buscar expediente
+        ExpedienteCredito expediente = expedienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expediente no encontrado"));
+
+        // 2. VALIDACIÓN: Verificar si tiene todos los documentos
+        if (!validarDocumentosCompletos(expediente)) {
+            throw new RuntimeException("No se puede enviar: Faltan documentos obligatorios por cargar.");
+        }
+
+        // 3. Actualizar Estado
+        expediente.setEstado(true); // true = 1 (En Evaluación)
+
+        expedienteRepository.save(expediente);
+    }
+    private boolean validarDocumentosCompletos(ExpedienteCredito expediente) {
+        List<DocumentoExpediente> docs = expediente.getDocumentos();
+
+        // REGLA 1: No puede estar vacío
+        if (docs == null || docs.isEmpty()) {
+            return false;
+        }
+        if (docs.size() < 8) return false;
+
+        return true;
     }
 }

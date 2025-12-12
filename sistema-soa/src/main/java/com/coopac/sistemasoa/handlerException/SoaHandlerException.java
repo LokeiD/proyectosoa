@@ -18,7 +18,11 @@ public class SoaHandlerException {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-        return new ResponseEntity<>(buildErrorResponse("500", "Ocurrio un error inesperado"), HttpStatus.INTERNAL_SERVER_ERROR);
+        ex.printStackTrace();
+        return new ResponseEntity<>(
+                buildErrorResponse("500", "Ocurrio un error inesperado: " + ex.getMessage()), // Agregamos ex.getMessage() para verlo en el alert del navegador
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 
     private HttpStatus resolveHttpStatus(String code) {

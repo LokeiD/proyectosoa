@@ -5,7 +5,7 @@ info:
 servers:
   - url: http://localhost:8080
 paths:
-  # --- ENDPOINTS SEPARADOS (Uno por entidad) ---
+  # --- ENDPOINTS EXISTENTES ---
 
   /credito/productos:
     get:
@@ -71,7 +71,6 @@ paths:
                 items:
                   $ref: '#/components/schemas/PeriodoDTO'
 
-  # --- Tu endpoint de registro sigue igual ---
   /credito/solicitar:
     post:
       tags:
@@ -90,6 +89,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SolicitudCreditoDTO'
+
+  # --- NUEVOS ENDPOINTS DE DOCUMENTOS ---
+
+  /credito/documentos/subir:
+    post:
+      tags:
+        - Documentos
+      summary: Subir documento físico al servidor y registrar en BD
+      operationId: subirDocumento
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                archivo:
+                  type: string
+                  format: binary
+                codExpediente:
+                  type: integer
+                tipoDoc:
+                  type: string
+                  description: 'Clave del tipo de documento (ej: dni, ficha, visita)'
+      responses:
+        '200':
+          description: Documento guardado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentoExpedienteDTO'
+
+  /credito/documentos/ver/{filename}:
+    get:
+      tags:
+        - Documentos
+      summary: Descargar o visualizar un documento por nombre
+      operationId: verDocumento
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Archivo binario (PDF, JPG, etc.)
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
 
 components:
   schemas:
@@ -145,3 +195,21 @@ components:
           type: string
         codTrabajador:
           type: integer
+
+    # --- NUEVO DTO DE DOCUMENTO ---
+    DocumentoExpedienteDTO:
+      type: object
+      description: Respuesta al subir un documento
+      properties:
+        codDocumento:
+          type: integer
+        nombreArchivo:
+          type: string
+        fechaCarga:
+          type: string
+          format: date-time
+        codExpediente:
+          type: integer
+        tipoDetectado:
+          type: string
+          description: 'Campo calculado para indicar si es dni, ficha, etc.'

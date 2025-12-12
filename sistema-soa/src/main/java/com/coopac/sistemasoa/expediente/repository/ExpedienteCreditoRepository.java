@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface ExpedienteCreditoRepository extends JpaRepository<ExpedienteCredito, Integer> {
-    List<ExpedienteCredito> findBySocio(Socio socio);
+    List<ExpedienteCredito> findByEstado(Boolean estado);
 }

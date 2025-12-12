@@ -1,5 +1,6 @@
 package com.coopac.sistemasoa.expediente.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ public class DocumentoExpediente {
 
     @ManyToOne
     @JoinColumn(name = "Cod_Expediente")
+    @JsonBackReference
     private ExpedienteCredito expediente;
 
     @Column(name = "Nombre_Archivo", nullable = false, length = 255)
@@ -23,4 +25,5 @@ public class DocumentoExpediente {
 
     @Column(name = "Fecha_Carga", nullable = false)
     private LocalDateTime fechaCarga;
+
 }
