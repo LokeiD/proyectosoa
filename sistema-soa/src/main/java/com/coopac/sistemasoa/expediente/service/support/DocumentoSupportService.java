@@ -1,6 +1,6 @@
-package com.coopac.sistemasoa.expediente.service;
+package com.coopac.sistemasoa.expediente.service.support;
 
-import com.coopac.sistemasoa.credito.model.dto.DocumentoExpedienteDTO;
+import com.coopac.sistemasoa.expediente.model.dto.DocumentoExpedienteDTO;
 import com.coopac.sistemasoa.exception.SoaException;
 import com.coopac.sistemasoa.expediente.model.DocumentoExpediente;
 import com.coopac.sistemasoa.expediente.model.ExpedienteCredito;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 @Service
-public class DocumentoService {
+public class DocumentoSupportService {
 
     // Carpeta raíz donde se guardarán los archivos
     private final Path rootLocation = Paths.get("archivos-expedientes");
@@ -29,7 +29,7 @@ public class DocumentoService {
     @Autowired private ExpedienteCreditoRepository expedienteRepository;
 
     // Constructor: Asegura que la carpeta exista al iniciar el servicio
-    public DocumentoService() {
+    public DocumentoSupportService() {
         try {
             Files.createDirectories(rootLocation);
         } catch (IOException e) {
@@ -147,3 +147,4 @@ public class DocumentoService {
         }
     }
 }
+

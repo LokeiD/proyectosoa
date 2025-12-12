@@ -136,10 +136,13 @@ txtTem.addEventListener('input', function() {
 });
 
 // --- TU CÓDIGO DE REGISTRO (INTACTO) ---
+// --- TU CÓDIGO DE REGISTRO (CORREGIDO) ---
 const btnRegistrar = document.getElementById('btnRegistrar');
 
 btnRegistrar.addEventListener('click', async function() {
     const dniSocio = document.getElementById('txtDniResultado').value;
+    const temValor = document.getElementById('txtTem').value;
+    const teaValor = document.getElementById('txtTea').value;
 
     // Pequeña ayuda para validar selects vacíos
     const getVal = (id) => {
@@ -147,42 +150,55 @@ btnRegistrar.addEventListener('click', async function() {
         return (el && el.value !== "-- Seleccione --") ? el.value : null;
     };
 
+    // Usamos parseFloat para asegurar que los valores sean números
     const datosSolicitud = {
         dniSocio: dniSocio,
-        montoSolicitado: document.getElementById('txtMonto').value,
-        codProducto: getVal('cboProducto'),
-        codRecurrencia: getVal('cboRecurrencia'),
-        codRiesgo: getVal('cboRiesgo'),
-        codPeriodo: getVal('cboPeriodo'),
+        montoSolicitado: parseFloat(document.getElementById('txtMonto').value),
+        codProducto: parseInt(getVal('cboProducto')),
+        codRecurrencia: parseInt(getVal('cboRecurrencia')),
+        codRiesgo: parseInt(getVal('cboRiesgo')),
+        codPeriodo: parseInt(getVal('cboPeriodo')),
         actividad: document.getElementById('txtActividad').value,
-        codTrabajador: 1
+        codTrabajador: 1 // Asumimos que el trabajador es fijo por ahora
+        // No enviamos TEM/TEA porque esos son datos calculados, no solicitados.
+        // El backend no los necesita para el SS-1.
     };
 
+    // --- VALIDACIONES ---
     if (!dniSocio) { alert("⚠️ Error: Debes buscar y validar un socio primero."); return; }
-    if (datosSolicitud.montoSolicitado <= 0) { alert("⚠️ Error: El monto debe ser mayor a 0."); return; }
+    if (datosSolicitud.montoSolicitado <= 0 || isNaN(datosSolicitud.montoSolicitado)) { alert("⚠️ Error: El monto debe ser un número mayor a 0."); return; }
     if (!datosSolicitud.codProducto || !datosSolicitud.codRecurrencia) { alert("⚠️ Error: Complete todos los campos de selección."); return; }
+    // --- FIN VALIDACIONES ---
 
     try {
         btnRegistrar.disabled = true;
         btnRegistrar.textContent = "Procesando...";
 
-        const response = await fetch(`${API_URL}/creditos/solicitud`, {
+        // --- CAMBIO CLAVE: Llama al nuevo Orquestador (SN-1) ---
+        const response = await fetch(`${API_URL}/credito/solicitar-expediente`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datosSolicitud)
         });
 
         if (!response.ok) {
-            const errorMsg = await response.text();
+            // Manejo de errores de validación de la capa SE-1 y SE-2
+            let errorMsg = await response.text();
+            try {
+                // Intenta parsear el JSON de error que manda el GlobalExceptionHandler
+                const errorJson = JSON.parse(errorMsg);
+                errorMsg = errorJson.message || errorMsg;
+            } catch(e){}
+
             throw new Error(errorMsg);
         }
 
-        const solicitudCreada = await response.json();
-        alert(`✅ ¡Solicitud Registrada con Éxito!\nN° de Expediente: ${solicitudCreada.codExpediente}`);
+        // Si el Orquestador SN-1 (Service) retorna 201 Created
+        alert(`✅ ¡Solicitud Registrada y Orquestada con Éxito!`);
         location.reload();
 
     } catch (error) {
-        alert("❌ Error al registrar: " + error.message);
+        alert("❌ Error en el proceso (SOA): " + error.message);
     } finally {
         btnRegistrar.disabled = false;
         btnRegistrar.textContent = "REGISTRAR SOLICITUD";

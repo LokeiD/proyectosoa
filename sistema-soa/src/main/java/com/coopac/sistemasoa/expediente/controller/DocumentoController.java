@@ -1,7 +1,7 @@
 package com.coopac.sistemasoa.expediente.controller;
 
-import com.coopac.sistemasoa.credito.model.dto.DocumentoExpedienteDTO;
-import com.coopac.sistemasoa.expediente.service.DocumentoService;
+import com.coopac.sistemasoa.expediente.model.dto.DocumentoExpedienteDTO;
+import com.coopac.sistemasoa.expediente.service.support.DocumentoSupportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +22,7 @@ import java.nio.file.Files;
 public class DocumentoController {
 
     @Autowired
-    private DocumentoService documentoService;
+    private DocumentoSupportService documentoSupportService;
 
     @PostMapping(value = "/subir", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DocumentoExpedienteDTO> subirDocumento(
@@ -30,14 +30,14 @@ public class DocumentoController {
             @RequestParam("codExpediente") Integer codExpediente,
             @RequestParam("tipoDoc") String tipoDoc) {
 
-        DocumentoExpedienteDTO response = documentoService.guardarArchivo(archivo, codExpediente, tipoDoc);
+        DocumentoExpedienteDTO response = documentoSupportService.guardarArchivo(archivo, codExpediente, tipoDoc);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/ver/{filename:.+}")
     public ResponseEntity<Resource> verDocumento(@PathVariable String filename) throws IOException {
 
-        Resource file = documentoService.cargarRecurso(filename);
+        Resource file = documentoSupportService.cargarRecurso(filename);
         String contentType = Files.probeContentType(file.getFile().toPath());
         if (contentType == null) contentType = "application/octet-stream";
 

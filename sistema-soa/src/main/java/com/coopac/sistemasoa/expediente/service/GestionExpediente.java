@@ -1,24 +1,17 @@
 package com.coopac.sistemasoa.expediente.service;
 
-import com.coopac.sistemasoa.credito.model.dto.ProductoDTO;
-import com.coopac.sistemasoa.credito.model.dto.*;
+import com.coopac.sistemasoa.expediente.model.dto.*;
 import com.coopac.sistemasoa.empleado.repository.TrabajadorRepository;
-import com.coopac.sistemasoa.exception.SoaException;
-import com.coopac.sistemasoa.expediente.model.DocumentoExpediente;
 import com.coopac.sistemasoa.expediente.model.ExpedienteCredito;
 import com.coopac.sistemasoa.expediente.repository.*;
-import com.coopac.sistemasoa.socio.model.Socio;
 import com.coopac.sistemasoa.socio.repository.SocioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class GestionCreditosService {
+public class GestionExpediente {
 
 
     @Autowired private ExpedienteCreditoRepository expedienteRepository;
@@ -73,55 +66,8 @@ public class GestionCreditosService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public ExpedienteCredito registrarSolicitud(SolicitudCreditoDTO dto) {
-
-        Socio socio = socioRepository.findByDni(dto.getDniSocio())
-                .orElseThrow(() -> new SoaException("404","No se encontró socio con DNI: " + dto.getDniSocio()));
-
-        ExpedienteCredito expediente = new ExpedienteCredito();
-        expediente.setSocio(socio);
-        expediente.setRecurrencia(recurrenciaRepository.getReferenceById(dto.getCodRecurrencia()));
-        expediente.setRiesgo(riesgoRepository.getReferenceById(dto.getCodRiesgo()));
-        expediente.setPeriodo(periodoRepository.getReferenceById(dto.getCodPeriodo()));
-        expediente.setProducto(productoRepository.getReferenceById(dto.getCodProducto()));
-        expediente.setTrabajador(trabajadorRepository.getReferenceById(dto.getCodTrabajador()));
-        expediente.setMontoSolicitado(dto.getMontoSolicitado());
-        expediente.setActividad(dto.getActividad());
-        expediente.setFechaSolicitud(LocalDate.now());
-        expediente.setEstado(false);
-
-        return expedienteRepository.save(expediente);
-    }
-
     public List<ExpedienteCredito> listarTodas() {
         return expedienteRepository.findByEstado(false);
     }
 
-    public void enviarAEvaluacion(Integer id) {
-        // 1. Buscar expediente
-        ExpedienteCredito expediente = expedienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Expediente no encontrado"));
-
-        // 2. VALIDACIÓN: Verificar si tiene todos los documentos
-        if (!validarDocumentosCompletos(expediente)) {
-            throw new RuntimeException("No se puede enviar: Faltan documentos obligatorios por cargar.");
-        }
-
-        // 3. Actualizar Estado
-        expediente.setEstado(true); // true = 1 (En Evaluación)
-
-        expedienteRepository.save(expediente);
-    }
-    private boolean validarDocumentosCompletos(ExpedienteCredito expediente) {
-        List<DocumentoExpediente> docs = expediente.getDocumentos();
-
-        // REGLA 1: No puede estar vacío
-        if (docs == null || docs.isEmpty()) {
-            return false;
-        }
-        if (docs.size() < 8) return false;
-
-        return true;
-    }
 }

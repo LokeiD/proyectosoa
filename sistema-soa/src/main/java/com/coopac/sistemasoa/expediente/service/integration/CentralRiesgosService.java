@@ -1,9 +1,12 @@
-package com.coopac.sistemasoa.expediente.service;
 
-import com.coopac.sistemasoa.credito.model.dto.DocumentoExpedienteDTO;
+package com.coopac.sistemasoa.expediente.service.integration;
+
+import com.coopac.sistemasoa.expediente.model.dto.DocumentoExpedienteDTO;
+
 import com.coopac.sistemasoa.exception.SoaException;
 import com.coopac.sistemasoa.expediente.model.ExpedienteCredito;
 import com.coopac.sistemasoa.expediente.repository.ExpedienteCreditoRepository;
+import com.coopac.sistemasoa.expediente.service.support.DocumentoSupportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -15,10 +18,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
-public class ExperianService {
+public class CentralRiesgosService {
 
     @Autowired
-    private DocumentoService documentoService;
+    private DocumentoSupportService documentoSupportService;
 
     @Autowired
     private ExpedienteCreditoRepository expedienteRepository;
@@ -506,11 +509,12 @@ public class ExperianService {
             // 4. GUARDAR
             byte[] pdfBytes = response.getBody();
             String nombreArchivo = "Reporte_Experian_" + dni + ".pdf";
-            return documentoService.guardarArchivoDesdeBytes(pdfBytes, nombreArchivo, codExpediente, "riesgos");
+            return documentoSupportService.guardarArchivoDesdeBytes(pdfBytes, nombreArchivo, codExpediente, "riesgos");
 
         } catch (Exception e) {
             e.printStackTrace();
             throw new SoaException("503", "Fallo en integración SOA: " + e.getMessage());
         }
     }
+
 }

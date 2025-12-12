@@ -1,0 +1,142 @@
+openapi: 3.0.3
+info:
+  title: API de Evaluación de Créditos
+  description: API para gestionar la evaluación y la generación de créditos.
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+    description: Servidor Principal
+
+paths:
+  # 1. LISTAR PENDIENTES
+  /creditos/evaluaciones/pendientes:
+    get:
+      summary: Listar expedientes pendientes de evaluación
+      operationId: listarExpedientesPendientes
+      tags:
+        - Evaluacion
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExpedienteResumenDTO'
+
+  # 2. OBTENER DETALLE (Para el Modal)
+  /creditos/evaluaciones/{idExpediente}:
+    get:
+      summary: Obtener detalle completo de un expediente
+      operationId: obtenerExpedienteDetalle
+      tags:
+        - Evaluacion
+      parameters:
+        - name: idExpediente
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpedienteDetalleDTO'
+
+  # 3. REGISTRAR DECISIÓN (Aquí ocurre la magia)
+  /creditos/evaluaciones:
+    post:
+      summary: Registrar evaluación (Aprobar/Rechazar/Observar)
+      description: Si se aprueba, crea registro en tabla Credito. Siempre crea registro en Evaluacion.
+      operationId: registrarEvaluacion
+      tags:
+        - Evaluacion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistroEvaluacionRequest'
+      responses:
+        '200':
+          description: Decisión procesada correctamente.
+
+components:
+  schemas:
+    # DTO PARA LA TABLA
+    ExpedienteResumenDTO:
+      type: object
+      properties:
+        idExpediente:
+          type: integer
+        numeroExpediente:
+          type: string
+        fechaSolicitud:
+          type: string
+          format: date
+        dni:
+          type: string
+        nombreCompleto:
+          type: string
+        producto:
+          type: string
+        montoSolicitado:
+          type: number
+        cuotas:
+          type: integer
+        periodo:
+          type: string
+        tea:
+          type: number
+        documentos:
+          type: array
+          items:
+            type: string
+          description: Lista de nombres de archivos cargados.
+
+    # DTO PARA EL MODAL (Hereda del Resumen y agrega extras)
+    ExpedienteDetalleDTO:
+      allOf:
+        - $ref: '#/components/schemas/ExpedienteResumenDTO'
+        - type: object
+          properties:
+            actividad:
+              type: string
+            tem:
+              type: number
+            riesgo:
+              type: string
+            recurrencia:
+              type: string
+
+    # DTO DE ENTRADA (Lo que envía el JS al dar clic en Aprobar/Rechazar)
+    RegistroEvaluacionRequest:
+      type: object
+      required:
+        - codExpediente
+        - codTipoDecision
+      properties:
+        codExpediente:
+          type: integer
+        codTipoDecision:
+          type: integer
+          description: 1=Aprobado, 2=Observado, 3=Rechazado
+        observacion:
+          type: string
+          description: Detalle de la observación o resolución.
+
+        # DATOS SOLO PARA APROBACIÓN (Pueden ser nulos si rechazas)
+        montoAprobado:
+          type: number
+        cuotasAprobadas:
+          type: integer
+        periodoAprobado: # Recibimos el texto del periodo (ej. "MENSUAL")
+          type: string
+        temAprobado:
+          type: number
+        teaAprobada:
+          type: number

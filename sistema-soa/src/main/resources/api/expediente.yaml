@@ -1,0 +1,237 @@
+openapi: 3.0.3
+info:
+  title: API Sistema SOA - Gestión de Créditos (SOA Unificado)
+  version: 1.0.0
+servers:
+  # Base URL para todos los endpoints (se combina con el @RequestMapping /api/v1 en el Controller)
+  - url: /api/v1
+    description: Servidor principal para todos los endpoints de Créditos
+paths:
+  # =======================================================
+  # 1. SERVICIOS DE NEGOCIO (SN) - ORQUESTACIÓN
+  # =======================================================
+
+  /credito/solicitar-expediente:
+    post:
+      tags:
+        - Solicitud
+      summary: SN-1 Registrar solicitud de crédito (Orquestador)
+      description: Orquesta la validación de socio, aportes y la generación del expediente.
+      operationId: registrarSolicitudExpediente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolicitudCreditoRequest'
+      responses:
+        '201':
+          description: Solicitud registrada y expediente generado correctamente.
+        '400':
+          description: Error de validación en capa de Entidad (ej. Socio no apto).
+
+  # =======================================================
+  # 2. SERVICIOS DE SOPORTE (SS) - GESTIÓN DE DOCUMENTOS
+  # =======================================================
+
+  /creditos/documentos/subir:
+    post:
+      tags:
+        - Documentos
+      summary:  Subir documento físico al servidor y registrar en BD
+      operationId: subirDocumento
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                archivo:
+                  type: string
+                  format: binary
+                codExpediente:
+                  type: integer
+                tipoDoc:
+                  type: string
+                  description: 'Clave del tipo de documento (ej: dni, ficha, visita)'
+      responses:
+        '200':
+          description: Documento guardado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentoExpedienteDTO'
+
+  /creditos/documentos/ver/{filename}:
+    get:
+      tags:
+        - Documentos
+      summary: Descargar o visualizar un documento por nombre
+      operationId: verDocumento
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Archivo binario (PDF, JPG, etc.)
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  # =======================================================
+  # 3. SERVICIOS DE CATÁLOGOS (Consulta de Entidad/Soporte)
+  # =======================================================
+
+  /creditos/productos:
+    get:
+      tags:
+        - Catalogos
+      summary: Listar productos crediticios
+      operationId: listarProductos
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductoDTO'
+
+  /creditos/recurrencias:
+    get:
+      tags:
+        - Catalogos
+      summary: Listar tipos de recurrencia
+      operationId: listarRecurrencias
+      responses:
+        '200':
+          description: Lista de recurrencias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecurrenciaDTO'
+
+  /creditos/riesgos:
+    get:
+      tags:
+        - Catalogos
+      summary: Listar niveles de riesgo
+      operationId: listarRiesgos
+      responses:
+        '200':
+          description: Lista de riesgos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RiesgoDTO'
+
+  /creditos/periodos:
+    get:
+      tags:
+        - Catalogos
+      summary: Listar periodos
+      operationId: listarPeriodos
+      responses:
+        '200':
+          description: Lista de periodos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PeriodoDTO'
+
+components:
+  schemas:
+    # --- DTOs DEL REQUEST (SN-1) ---
+    SolicitudCreditoRequest:
+      type: object
+      required:
+        - dniSocio
+        - montoSolicitado
+        - codProducto
+        - codRecurrencia
+        - codRiesgo
+        - codPeriodo
+        - actividad
+      properties:
+        dniSocio:
+          type: string
+          description: DNI del socio a validar (SE-1).
+        montoSolicitado:
+          type: number
+          format: double
+        codProducto:
+          type: integer
+        codRecurrencia:
+          type: integer
+        codRiesgo:
+          type: integer
+        codPeriodo:
+          type: integer
+        actividad:
+          type: string
+        codTrabajador:
+          type: integer
+          description: ID del trabajador que registra la solicitud.
+
+    # --- DTOs DE RESPUESTA (CATÁLOGOS) ---
+    ProductoDTO:
+      type: object
+      properties:
+        codProducto:
+          type: integer
+        nombre:
+          type: string
+
+    RecurrenciaDTO:
+      type: object
+      properties:
+        codRecurrencia:
+          type: integer
+        nombre:
+          type: string
+
+    RiesgoDTO:
+      type: object
+      properties:
+        codRiesgo:
+          type: integer
+        descripcion:
+          type: string
+
+    PeriodoDTO:
+      type: object
+      properties:
+        codPeriodo:
+          type: integer
+        descripcion:
+          type: string
+
+    # --- DTOs DE RESPUESTA (DOCUMENTOS) ---
+    DocumentoExpedienteDTO:
+      type: object
+      description: Respuesta al subir un documento
+      properties:
+        codDocumento:
+          type: integer
+        nombreArchivo:
+          type: string
+        fechaCarga:
+          type: string
+          format: date-time
+        codExpediente:
+          type: integer
+        tipoDetectado:
+          type: string
+          description: 'Campo calculado para indicar si es dni, ficha, etc.'

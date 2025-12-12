@@ -128,23 +128,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>generate-credito</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/api/solicitud.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.coopac.sistemasoa.credito.api</apiPackage>
-                            <modelPackage>com.coopac.sistemasoa.credito.model.dto</modelPackage>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useTags>true</useTags>
-                            </configOptions>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>generate-cuenta-ahorro</id>
                         <goals>
                             <goal>generate</goal>
@@ -154,7 +137,40 @@
                             <generatorName>spring</generatorName>
                             <apiPackage>com.coopac.sistemasoa.cuentaahorro.api</apiPackage>
                             <modelPackage>com.coopac.sistemasoa.cuentaahorro.model.dto</modelPackage>
-
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useTags>true</useTags>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-evaluacion-credito</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/api/evaluacioncredito.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.coopac.sistemasoa.evaluacion.api</apiPackage>
+                            <modelPackage>com.coopac.sistemasoa.evaluacion.model.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useTags>true</useTags>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-expediente-credito</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/api/expediente.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.coopac.sistemasoa.expediente.api</apiPackage>
+                            <modelPackage>com.coopac.sistemasoa.expediente.model.dto</modelPackage>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <useSpringBoot3>true</useSpringBoot3>
